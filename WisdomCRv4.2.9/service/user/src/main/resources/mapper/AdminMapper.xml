@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.AdminMapper">
+
+    <resultMap id="adminLoginVO" type="com.wisdom.user.bean.vo.AdminLoginVO">
+        <id property="id" column="id"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="role" column="role"/>
+    </resultMap>
+
+    <resultMap id="auditTextVO" type="com.wisdom.user.bean.vo.AuditTextVO">
+        <id property="id" column="id"/>
+        <result property="auditId" column="audit_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="role" column="role"/>
+        <result property="auditResult" column="audit_result"/>
+        <result property="auditText" column="audit_text"/>
+        <result property="textType" column="text_type"/>
+        <result property="auditSource" column="audit_source"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="auditImgVO" type="com.wisdom.user.bean.vo.AuditImgVO">
+        <id property="id" column="id"/>
+        <result property="auditId" column="audit_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="role" column="role"/>
+        <result property="auditResult" column="audit_result"/>
+        <result property="auditImg" column="audit_img"/>
+        <result property="auditSource" column="audit_source"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+    <select id="login" parameterType="com.wisdom.user.bean.dto.AdminLoginDTO" resultMap="adminLoginVO">
+        select * from admin where account = #{account} and password = #{password}
+    </select>
+
+    <select id="addAuditText" parameterType="com.wisdom.user.bean.dto.AuditTextDTO">
+        insert audit_text(audit_id, user_name, role, audit_text, audit_source, audit_result, user_id) values (#{auditId}, #{userName}, #{role}, #{auditText}, #{auditSource}, #{auditResult}, #{userId})
+    </select>
+
+    <select id="addAuditImg" parameterType="com.wisdom.user.bean.dto.AuditImgDTO">
+        insert audit_img(audit_id, user_name, role, audit_img, audit_source, audit_result, user_id) values (#{auditId}, #{userName}, #{role}, #{auditImg}, #{auditSource}, #{auditResult}, #{userId})
+    </select>
+
+    <select id="reviewText" resultMap="auditTextVO">
+        select * from audit_text where audit_result = 1 and deleted = 0
+    </select>
+
+    <select id="historyText" resultMap="auditTextVO">
+        select * from audit_text where audit_statue = 1 and deleted = 0
+    </select>
+
+    <select id="textSecurity" resultMap="auditTextVO">
+        select * from audit_text where deleted = 0
+        <if test="val != null and val != ''">
+            and CONCAT( IFNULL(audit_text,'')) LIKE CONCAT('%',#{val},'%')
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="reviewImg" resultMap="auditImgVO">
+        select * from audit_img where audit_result = 1 and deleted = 0
+    </select>
+
+    <select id="historyImg" resultMap="auditImgVO">
+        select * from audit_img where audit_statue = 1 and deleted = 0
+    </select>
+
+    <select id="imgSecurity" resultMap="auditImgVO">
+        select * from audit_img where deleted = 0
+    </select>
+
+    <select id="updateAuditText">
+        update audit_text set audit_result = #{auditResult},audit_statue = #{auditStatue} where id = #{id}
+    </select>
+
+    <select id="updateAuditImg">
+        update audit_img set audit_result = #{auditResult},audit_statue = #{auditStatue} where id = #{id}
+    </select>
+
+    <select id="getAuditText" resultMap="auditTextVO">
+        select * from audit_text where audit_id = #{auditId} and deleted = 0
+    </select>
+
+    <select id="getAuditImg" resultMap="auditImgVO">
+        select * from audit_img where audit_id = #{auditId} and deleted = 0
+    </select>
+
+    <select id="updateNoticeStatue">
+        update notice set is_pass = #{isPass} where notice_id = #{auditId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.StudentMapper">
+    <sql id="student_and_class">
+        stu.id, stu.stu_id, stu.stu_name, stu.gender, stu.image,
+        stu.phone, stu.email, stu.stu_study_time, stu.stu_score
+    </sql>
+
+    <resultMap id="studentClassMap" type="StudentDetailedVO">
+        <result column="stu_name" property="stuName"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="gender" property="gender"/>
+        <result column="image" property="image"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="stu_study_time" property="stuStudyTime"/>
+        <result column="stu_score" property="scoreTotal"/>
+    </resultMap>
+    <resultMap id="classAllStuMap" type="StuAboutClassVO">
+        <result column="stu_id" property="stuId"/>
+        <result column="stu_name" property="stuName"/>
+        <result column="email" property="email"/>
+    </resultMap>
+    <resultMap id="userLoginMap" type="LoginVO">
+        <id property="id" column="id"/>
+        <result column="stu_id" property="userId"/>
+    </resultMap>
+
+    <insert id="addClock" parameterType="long">
+        INSERT INTO clock_date (`stu_id`)
+        VALUES (#{stuId});
+    </insert>
+    <insert id="addScore" parameterType="long">
+        INSERT INTO stu_score (`stu_id`, `score_type`, `score`)
+        VALUES (#{stuId}, 5, 50);
+    </insert>
+
+    <select id="login" parameterType="UserLoginDTO" resultMap="userLoginMap">
+        SELECT id, stu_id FROM student WHERE email = #{account} AND password = #{password} AND deleted = 0
+    </select>
+    <select id="queryStudentByClassId" parameterType="long" resultMap="studentClassMap">
+        SELECT DISTINCT <include refid="student_and_class"/>
+        FROM student stu
+        LEFT JOIN stu_class soc
+        ON stu.stu_id = soc.stu_id
+        LEFT JOIN class cla
+        ON cla.class_id = soc.class_id
+        WHERE  cla.class_id = #{classId} AND stu.deleted = 0 AND soc.deleted = 0 AND cla.deleted = 0
+    </select>
+    <select id="getStuStudyTime" parameterType="long" resultType="long">
+        SELECT stu_study_time FROM student WHERE id = #{id} AND deleted = 0
+    </select>
+    <select id="getStuScoreType" parameterType="long" resultType="int">
+        SELECT score_type FROM stu_score WHERE stu_id = #{stuId} AND deleted = 0 ORDER BY score_type
+    </select>
+    <select id="getStuScore" parameterType="ScoreQueryDTO" resultType="stuScore">
+        SELECT * FROM stu_score WHERE stu_id = #{stuId} AND deleted = 0 AND score_type = #{scoreType}
+    </select>
+    <select id="classQueryAllStu" parameterType="string" resultMap="classAllStuMap">
+        SELECT stu_id, stu_name, image, email
+        FROM student
+        WHERE  email LIKE concat('%', #{email}, '%') AND deleted = 0
+    </select>
+    <select id="selectStudentName" parameterType="long" resultType="string">
+        select stu_name from student where stu_id = #{stuId}
+    </select>
+    <select id="getStuClockDate" resultType="map">
+        SELECT DATE_FORMAT(clock_date.create_time,'%Y-%m-%d %h:%m:%s') AS create_time, info
+        FROM clock_date
+        WHERE stu_id = #{arg0} AND create_time  BETWEEN #{arg1} AND #{arg2}
+        ORDER BY create_time
+    </select>
+    <select id="getStuByStuId" resultMap="studentClassMap">
+        select * from student where stu_id = #{stuId}
+    </select>
+    <select id="updateScore">
+        update student set stu_score = #{stuScore} where stu_id = #{stuId} and deleted = 0
+    </select>
+    <select id="getStuScoreByStuId" resultType="int">
+        select stu_score from student where stu_id = #{stuId}
+    </select>
+</mapper>

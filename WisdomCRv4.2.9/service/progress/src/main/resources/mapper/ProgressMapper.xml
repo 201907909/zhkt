@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.progress.mapper.ProgressMapper">
+    <resultMap id="clasProgressVO" type="com.wisdom.durations.bean.vo.ClassProgressVO">
+        <id property="id" column="id" />
+        <result property="classId" column="class_id"/>
+        <result property="className" column="class_name"/>
+        <result property="teaName" column="tea_name"/>
+        <result property="classLogo" column="class_logo"/>
+        <result property="classId" column="class_id"/>
+    </resultMap>
+    <resultMap id="courseProgressVO" type="com.wisdom.durations.bean.vo.CourseProgressVO">
+        <id property="id" column="id" />
+        <result property="couId" column="cou_id"/>
+        <result property="couPic" column="cou_pic"/>
+        <result property="teaName" column="tea_name"/>
+        <result property="couName" column="cou_name"/>
+    </resultMap>
+    <resultMap id="chaProgressVO1" type="com.wisdom.durations.bean.vo.ChapterProgressVO">
+        <id property="id" column="id" />
+        <result property="chaId" column="cha_id"/>
+        <result property="progressTime" column="MAX(end_time)"/>
+    </resultMap>
+    <resultMap id="chaProgressVO2" type="com.wisdom.durations.bean.vo.ChapterProgressVO">
+        <id property="id" column="id" />
+        <result property="chaId" column="cha_id"/>
+        <result property="startTime" column="end_time"/>
+    </resultMap>
+    <resultMap id="chaProgressVO3" type="com.wisdom.durations.bean.vo.ChapterProgressVO">
+        <id property="id" column="id" />
+        <result property="chaId" column="cha_id"/>
+        <result property="url" column="cha_url"/>
+    </resultMap>
+    <resultMap id="couCommentVO" type="com.wisdom.durations.bean.vo.CouCommentVO">
+        <id property="id" column="id" />
+        <result property="couComId" column="cou_com_id"/>
+        <result property="couId" column="cou_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="stuName" column="stu_name"/>
+        <result property="image" column="image"/>
+        <result property="couComment" column="cou_comment"/>
+        <result property="clicks" column="clicks"/>
+        <result property="drops" column="drops"/>
+    </resultMap>
+
+    <insert id="addClasCouProgress" useGeneratedKeys="true" keyProperty="id">
+        insert learning_progress(stu_id, cou_id, class_id, cha_id, end_time) values (#{stuId}, #{couId}, #{classId}, #{chaId}, #{endTime})
+    </insert>
+    <insert id="addHistoryLearningDuration" parameterType="com.wisdom.durations.bean.dto.ProgressDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO history_learning_duration (`stu_id`, `cou_id`)
+        VALUES (#{stuId}, #{couId});
+    </insert>
+
+    <update id="upHistoryLearningDuration">
+        update history_learning_duration set daily_time = #{newDuration} where id = #{id}
+    </update>
+
+    <select id="updateClasCouProgress">
+        update learning_progress set end_time = #{endTime} where id = #{id}
+    </select>
+    <select id="updateCouProgress">
+        update stu_cou_progress set end_time = #{endTime} where id = #{id}
+    </select>
+    <select id="getClasCouProgress" resultMap="clasProgressVO">
+        select t.tea_name, c.* from class c
+            left join stu_class sc on sc.class_id = c.class_id
+            left join teacher t on t.tea_id = c.tea_id
+        where sc.stu_id = #{stuId} and c.deleted = 0
+    </select>
+    <select id="isRecord" resultType="long">
+        select DISTINCT end_time from learning_progress where update_time in (select max(update_time) from learning_progress where stu_id = #{stuId} and class_id = #{classId} and cha_id = #{chaId})
+    </select>
+    <select id="isZXRecord" resultType="long">
+        select DISTINCT end_time from stu_cou_progress where update_time in (select max(update_time) from stu_cou_progress where stu_id = #{stuId}  and cha_id = #{chaId})
+    </select>
+    <insert id="addCouProgress" useGeneratedKeys="true" keyProperty="id">
+        insert stu_cou_progress(stu_id, cou_id, cha_id, end_time) values (#{stuId}, #{couId}, #{chaId}, #{endTime})
+    </insert>
+    <select id="getClassCouAllTime" resultType="long">
+        select MAX(end_time) from learning_progress where stu_id = #{stuId} and class_id = #{classId} and cou_id = #{couId} GROUP BY cha_id  ORDER BY cha_id asc
+    </select>
+    <select id="getClassCou" resultMap="courseProgressVO">
+        select cou.* from course cou left join cou_class cc on cou.cou_id = cc.cou_id where cc.class_id = #{classId}
+    </select>
+    <select id="claCourseChaPro" resultMap="chaProgressVO1">
+        select cha_id, MAX(end_time) from learning_progress where stu_id = #{stuId} and class_id = #{classId} and cou_id = #{couId} GROUP BY cha_id ORDER BY cha_id asc
+    </select>
+    <select id="courseChaPro" resultMap="chaProgressVO1">
+        select cha_id, MAX(end_time) from stu_cou_progress where stu_id = #{stuId} and cou_id = #{couId} GROUP BY cha_id ORDER BY cha_id asc
+    </select>
+    <select id="clasCourseChaTime" resultMap="chaProgressVO2">
+        select cha_id,end_time from learning_progress where update_time in (select MAX(update_time) from learning_progress where stu_id = #{stuId} and class_id = #{classId} and cou_id = #{couId} GROUP BY cha_id) ORDER BY cha_id asc
+    </select>
+    <select id="courseChaTime" resultMap="chaProgressVO2">
+        select cha_id,end_time from stu_cou_progress where update_time in (select MAX(update_time) from stu_cou_progress where stu_id = #{stuId} and cou_id = #{couId} GROUP BY cha_id ORDER BY cha_id asc)
+    </select>
+    <select id="getCouCommment" resultMap="couCommentVO">
+        select s.stu_name,s.image,cc.* from course_comment cc left join student s on s.stu_id = cc.stu_id where cc.cou_id = #{couId} ORDER BY cc.update_time desc
+    </select>
+    <select id="isClick" resultType="int">
+        select count(*) from user_click where click_id = #{couComId} and user_id = #{stuId} and type = 1
+    </select>
+    <select id="isDrop" resultType="int">
+        select count(*) from user_click where click_id = #{couComId} and user_id = #{stuId} and type = 2
+    </select>
+    <select id="addComment">
+        insert course_comment(cou_com_id, cou_id, stu_id, cou_comment) values (#{couComId}, #{couId}, #{stuId}, #{couComment})
+    </select>
+    <select id="deletedClick">
+        delete from user_click  u where u.click_id = #{couComId} and u.user_id = #{stuId} and u.type = 1
+    </select>
+    <select id="updateCouComClicks">
+        update course_comment set clicks = #{clicks} where cou_com_id = #{couComId}
+    </select>
+    <select id="addClick">
+        insert user_click(user_id, click_id, type) values (#{stuId}, #{couComId}, 1)
+    </select>
+    <select id="deletedDrop">
+        delete from user_click  u where u.click_id = #{couComId} and u.user_id = #{stuId} and u.type = 2
+    </select>
+    <select id="updateCouComDrops">
+        update course_comment set drops = #{drops} where cou_com_id = #{couComId}
+    </select>
+    <select id="addDrop">
+        insert user_click(user_id, click_id, type) values (#{stuId}, #{couComId}, 2)
+    </select>
+    <select id="getYStudyTime" resultType="long">
+        select daily_time from learning_duration where  id in (select max(id) from learning_duration where stu_id = #{stuId} and create_time &lt; #{yesterday})
+    </select>
+    <select id="monthTime" resultType="long">
+        select SUM(daily_time) from learning_duration where stu_id = #{stuId} and create_time &gt; #{monthFirstDay}
+    </select>
+    <insert id="addHisToryProgress" parameterType="com.wisdom.durations.bean.dto.HisToryProgressVO" useGeneratedKeys="true" keyProperty="id">
+        insert learning_duration(stu_id, cou_id, daily_time) values (#{stuId}, #{couId}, #{dailyTime})
+    </insert>
+    <select id="updateHisToryProgress">
+        update learning_duration set daily_time = #{dailyTime} where id = #{id}
+    </select>
+    <select id="getCouProgress" resultMap="courseProgressVO">
+        select t.tea_name,c.* from stu_cou sc
+            left join course c
+                on c.cou_id = sc.cou_id
+            left join teacher t
+                on t.tea_id = c.tea_id where sc.stu_id = #{stuId}
+    </select>
+    <select id="getCouAllTime" resultType="long">
+        select MAX(end_time) from stu_cou_progress where stu_id = #{stuId} and cou_id = #{couId} GROUP BY cha_id  ORDER BY cha_id asc
+    </select>
+    <select id="getNewClaChaStartTime" resultMap="chaProgressVO3">
+        select DISTINCT lp.cha_id, c.cha_url from learning_progress lp left join chapter c on c.cha_id = lp.cha_id where lp.update_time in (select MAX(update_time) from learning_progress where stu_id = #{stuId} and cou_id = #{couId} and class_id = #{classId})
+    </select>
+    <select id="getNewCouChaStartTime" resultMap="chaProgressVO3">
+        select DISTINCT scp.cha_id, c.cha_url from stu_cou_progress scp left join chapter c on c.cha_id = scp.cha_id where scp.update_time in (select MAX(update_time) from stu_cou_progress where stu_id = #{stuId} and cou_id = #{couId})
+    </select>
+    <select id="isExist" resultType="long">
+        select id from learning_duration where stu_id = #{stuId} and cou_id = #{couId}
+    </select>
+    <select id="getClasCouProgressTime" resultType="long">
+        select max(end_time) from learning_progress where stu_id = #{stuId} and cha_id = #{chaId} and class_id = #{classId}
+    </select>
+    <select id="getCouProgressTime" resultType="long">
+        select max(end_time) from stu_cou_progress where stu_id = #{stuId} and cha_id = #{chaId}
+    </select>
+    <select id="getClaCouStartTime" resultType="long">
+        select end_time from learning_progress where update_time in (select MAX(update_time) from learning_progress where stu_id = #{stuId} and class_id = #{classId} and cha_id = #{chaId})
+    </select>
+    <select id="getCouStartTime" resultType="long">
+        select end_time from stu_cou_progress where update_time in (select MAX(update_time) from stu_cou_progress where stu_id = #{stuId} and cha_id = #{chaId})
+    </select>
+    <select id="getHisToryProgress" resultType="long">
+        select daily_time from learning_duration where id = #{id}
+    </select>
+    <select id="getClicks" resultMap="couCommentVO">
+        select clicks, drops from course_comment where cou_com_id = #{couComId}
+    </select>
+    <select id="addScore">
+        insert stu_score(stu_id, score_type, score) values (#{stuId}, #{scoreType}, #{score})
+    </select>
+</mapper>

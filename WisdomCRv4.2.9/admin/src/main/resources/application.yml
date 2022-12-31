@@ -1,0 +1,42 @@
+# 端口
+server:
+  port: 9200
+
+# 服务名称、微服务配置、安全认证、邮件配置
+spring:
+  application:
+    name: admin-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  security:
+    user:
+      name: admin
+      password: 123456
+    basic:
+      enabled: true
+  mail:
+    name: WisdomCR
+    username: vwanbao@163.com
+    password: CRDTJNZFARCFJEQW
+    host: smtp.163.com
+    default-encoding: UTF-8
+  boot:
+    admin:
+      notify:
+        mail:
+          to: ${spring.mail.username} # 告警收件人
+          from: ${spring.mail.username} # 告警发件人
+
+# 端点配置
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    enabled-by-default: true
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'

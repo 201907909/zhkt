@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.interaction.mapper.InforMapper">
+
+    <resultMap id="InforVO" type="com.wisdom.information.bean.vo.InforVO">
+        <id property="id" column="id" />
+        <result property="infoId" column="info_id"/>
+        <result property="teaId" column="tea_id"/>
+        <result property="infoTitle" column="info_title"/>
+        <result property="infoMain" column="info_main"/>
+        <result property="infoAuthor" column="info_author"/>
+        <result property="infoLike" column="info_like"/>
+        <result property="image" column="image"/>
+        <result property="infoImage" column="info_image"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <resultMap id="InforDTO" type="com.wisdom.information.bean.dto.InforDTO">
+        <id property="id" column="id" />
+        <result property="infoId" column="info_id"/>
+        <result property="teaId" column="tea_id"/>
+        <result property="infoTitle" column="info_title"/>
+        <result property="infoMain" column="info_main"/>
+        <result property="infoAuthor" column="info_author"/>
+    </resultMap>
+    <resultMap id="CommentVO" type="com.wisdom.information.bean.vo.CommentVO">
+        <id property="id" column="id" />
+        <result property="comId" column="com_id"/>
+        <result property="infoId" column="info_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="comContent" column="com_content"/>
+        <result property="role" column="role"/>
+        <result property="userName" column="stu_name"/>
+        <result property="image" column="image"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="getAllInfor" resultMap="InforVO">
+        select * FROM information where deleted = 0 and info_id not in (SELECT info_id from info_message where user_id = #{userId}) ORDER BY create_time DESC
+    </select>
+    <select id="getAllInfor1" resultMap="InforVO">
+        select * FROM information where deleted = 0 and info_id in (SELECT info_id from info_message where user_id = #{userId}) ORDER BY create_time DESC limit #{start},#{noRead}
+    </select>
+    <select id="getAllInforByTeaId" resultMap="InforVO">
+        select * from information where tea_id = #{teaId} and deleted = 0 order by create_time desc
+    </select>
+
+    <select id="getTotal" resultType="long">
+        select count(*) from information where deleted = 0 and info_id in (SELECT info_id from info_message where user_id = #{userId})
+    </select>
+
+    <select id="getAllTotal" resultType="long">
+        select count(*) from information where deleted = 0
+    </select>
+
+    <select id="getCount" resultType="long">
+        select count(*) from comment where info_id = #{infoId}
+    </select>
+
+    <select id="add">
+        insert information(info_id, tea_id, info_title, info_main, info_author, info_image, deleted) values (#{infoId}, #{teaId}, #{infoTitle}, #{infoMain}, #{infoAuthor}, #{infoImage}, #{deleted})
+    </select>
+
+    <select id="inforDetail" resultMap="InforVO">
+        select c.image, i.* from information i left join teacher c on c.tea_id = i.tea_id where info_id = #{infoId} and i.deleted = 0 order by i.create_time desc, i.update_time desc
+    </select>
+
+    <select id="getCommentByInfoId" resultMap="CommentVO">
+        select * from comment where info_id = #{infoId} and deleted = 0 order by create_time desc
+    </select>
+
+    <select id="commentListByInfoId" resultMap="CommentVO">
+        select * from comment where info_id = #{infoId} and deleted = 0 order by create_time desc
+    </select>
+
+    <select id="search" resultMap="InforVO">
+        select * from information where deleted = 0
+        <if test="val != null and val != ''">
+           and CONCAT( IFNULL(info_title,''),IFNULL(info_main,''),IFNULL(info_author,'')) LIKE CONCAT('%',#{val},'%')
+        </if>
+        order by create_time desc,update_time desc
+    </select>
+
+    <select id="teaSearch" resultMap="InforVO">
+        select * from information where tea_id = #{teaId} and deleted = 0
+        <if test="val != null and val != ''">
+            and CONCAT( IFNULL(info_title,''),IFNULL(info_main,''),IFNULL(info_author,'')) LIKE CONCAT('%',#{val},'%')
+        </if>
+        order by create_time desc,update_time desc
+    </select>
+
+    <select id="isRecommend" resultType="int">
+        select count(*) from user_click where click_id = #{infoId} and user_id = #{userId}
+    </select>
+
+    <select id="updateInforRecom">
+        update information set info_like = #{infoLike} where info_id = #{infoId}
+    </select>
+
+    <select id="updateComRecommend">
+        update comment set recommend = #{recommend} where info_id = #{infoId} and user_id = #{userId}
+    </select>
+
+    <delete id="deletedInfo">
+        update information set deleted = 1 where info_id = #{infoId}
+    </delete>
+
+    <delete id="deletedCom">
+        update comment set deleted = 1 where info_id in (#{infoId})
+    </delete>
+
+    <select id="A" resultMap="InforVO">
+        select * from information where deleted = 0 order by create_time desc,update_time desc
+    </select>
+    <select id="B" resultMap="InforVO">
+        select * from information where deleted = 0
+        <if test="val != null and val != ''">
+            and CONCAT( IFNULL(info_title,''),IFNULL(info_main,''),IFNULL(info_author,'')) LIKE CONCAT('%',#{val},'%')
+        </if>
+        order by create_time desc,update_time desc
+    </select>
+    <select id="c" resultMap="InforVO">
+        select * from information where info_id = #{infoId} and deleted = 0 order by create_time desc,update_time desc
+    </select>
+    <select id="D" resultMap="CommentVO">
+        select s.image,s.stu_name, c.* from comment c
+                                     LEFT JOIN student s on s.stu_id = c.user_id where c.info_id = #{infoId} and c.deleted = 0 order by c.create_time desc,c.update_time desc
+    </select>
+
+    <select id="addClicks">
+        insert user_click(user_id, click_id) values (#{userId}, #{infoId})
+    </select>
+
+    <select id="deletedClicks">
+        delete from user_click where user_id = #{userId} and click_id = #{infoId}
+    </select>
+
+    <select id="updateInfor">
+        update information set info_title = #{infoTitle},info_main = #{infoMain},info_author = #{infoAuthor} where info_id = #{infoId}
+    </select>
+
+    <select id="remoteUpdateInfo">
+        update information set deleted = #{deleted} where info_id = #{infoId}
+    </select>
+
+    <select id="getClicks" resultType="long">
+        select info_like from information where info_id = #{infoId}
+    </select>
+
+    <select id="isRead" resultType="int">
+        select count(*) from info_message where info_id = #{infoId} and user_id = #{userId}
+    </select>
+
+    <select id="read">
+        insert info_message(info_id, user_id) values (#{infoId}, #{userId})
+    </select>
+    <select id="readNum" resultType="int">
+        select count(*) from info_message where user_id = #{userId}
+    </select>
+    <select id="getCommenyTotal" resultType="int">
+        select count(*) from comment where info_id = #{infoId}
+    </select>
+    <select id="teaNoticeInfo" resultMap="InforVO">
+        select i.* from information i left join notice n on n.notice_id = i.info_id where n.user_id = #{teaId} and n.deleted = 0
+    </select>
+</mapper>

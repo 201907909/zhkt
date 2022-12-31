@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.WenDaMapper">
+    <resultMap id="InterlocutionVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <resultMap id="replyVO" type="com.wisdom.interlocution.bean.vo.ReplyVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <resultMap id="issuesVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+        <collection property="replyVOList" column="que_id" javaType="ArrayList" ofType="com.wisdom.interlocution.bean.vo.ReplyVO" select="getIssueByansweredTqId"/>
+    </resultMap>
+
+    <select id="getIssue" resultMap="InterlocutionVO" parameterType="long">
+        select * from topic_question where que_id in (select DISTINCT answered_tq_id from topic_question where answered_tq_id != 0 and user_id = #{userId})
+    </select>
+    <select id="getMyIssues" resultMap="InterlocutionVO" parameterType="long">
+        select * from topic_question where answered_tq_id = 0 and user_id = #{userId}
+    </select>
+    <select id="getReply" resultMap="replyVO">
+        select * from topic_question where answered_tq_id = #{queId} and user_id = #{userId}
+    </select>
+    <select id="getReplyMyIssue" resultMap="issuesVO" parameterType="long">
+        select * from topic_question where que_id = #{queId}
+    </select>
+    <select id="getIssueByansweredTqId" resultMap="replyVO" parameterType="long">
+        select * from topic_question where answered_tq_id = #{que_id}
+    </select>
+    <resultMap id="MyReplyVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <select id="getMyReplyByqueId" resultMap="MyReplyVO" parameterType="long">
+        select * from topic_question where que_id = #{queId}
+    </select>
+</mapper>

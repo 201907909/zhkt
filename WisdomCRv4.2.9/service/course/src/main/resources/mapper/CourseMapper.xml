@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.course.mapper.CourseMapper">
+    <sql id="course_and_type">
+        cou.id, cou.cou_id, cou.cou_name, cou.cou_type, cou.cou_pic, typ1.type_name, typ2.type_name as parent_type_name
+    </sql>
+    <sql id="cou_a_type_a_tea">
+        cou.id, cou.cou_id, cou.cou_name, cou.cou_type, cou.cou_pic, tea.tea_id, tea.tea_name, typ2.type_name as parent_type_name
+    </sql>
+    <sql id="cla_cou_a_type_a_tea">
+        cou.id, cou.cou_id, cou.cou_name, cou.cou_type, cou.cou_pic, tea.tea_id, tea.tea_name, typ2.type_name as parent_type_name
+    </sql>
+    <sql id="course_type_detailed">
+        cou.id, cou.cou_id, cou.cou_name, cou.cou_type, cou.cou_pic, cou.cou_introduction,
+        cou.cou_price, cou.cou_cata_num, cou.cou_coll_num, cou.cou_share_num, cou.clicks,
+        cou.purchase_num, cou.evaluate_num, cou.recommend_num,
+        typ1.type_name, typ2.type_name as parent_type_name, typ1.cou_type_id, typ1.parent_type_id
+    </sql>
+    <sql id="any_fiery_course">
+        cou.cou_id, cou.cou_name, tea.tea_name, cou.cou_pic, cou.create_time, cou.cou_price, cou.cou_coll_num, cou.cou_share_num, cou.clicks, cou.purchase_num, cou.evaluate_num, cou.recommend_num
+    </sql>
+
+    <resultMap id="selectCourseByCSId" type="CourseBriefVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+    </resultMap>
+    <resultMap id="selectAllCourseByCSId" type="CourseBriefVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+    </resultMap>
+    <resultMap id="teaQueryAllCourseMap" type="CourseDetailedVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="type_name" property="typeName"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+        <result column="cou_introduction" property="couIntroduction"/>
+        <result column="cou_price" property="couPrice"/>
+        <result column="cou_cata_num" property="couCataNum"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="cou_share_num" property="couShareNum"/>
+        <result column="clicks" property="clicks"/>
+        <result column="purchase_num" property="purchaseNum"/>
+        <result column="evaluate_num" property="evaluateNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+        <result column="cou_type_id" property="typeId"/>
+        <result column="parent_type_id" property="parentTypeId"/>
+    </resultMap>
+    <resultMap id="courseByCSId" type="CourseAboutVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="type_name" property="typeName"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+    </resultMap>
+    <resultMap id="CourseVO" type="CourseVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_introduction" property="couIntroduction"/>
+        <result column="cou_price" property="couPrice"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_cata_num" property="couCataNum"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="cou_share_num" property="couShareNum"/>
+        <result column="clicks" property="clicks"/>
+        <result column="purchase_num" property="purchaseNum"/>
+        <result column="evaluate_num" property="evaluateNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+        <result column="cou_pic" property="couPic"/>
+    </resultMap>
+    <resultMap id="courseDetailedVO" type="com.wisdom.course.bean.vo.CourseDetailedVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="type_name" property="typeName"/>
+        <result column="cou_name" property="couName"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+        <result column="cou_introduction" property="couIntroduction"/>
+        <result column="cou_type" property="couType"/>
+        <result column="cou_price" property="couPrice"/>
+        <result column="cou_cata_num" property="couCataNum"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="cou_share_num" property="couShareNum"/>
+        <result column="clicks" property="clicks"/>
+        <result column="purchase_num" property="purchaseNum"/>
+        <result column="evaluate_num" property="evaluateNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+        <result column="cou_pic" property="couPic"/>
+    </resultMap>
+    <resultMap id="classAllCouMap" type="CouAboutClassVO">
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+    </resultMap>
+    <resultMap id="allType" type="com.wisdom.type.domain.Type">
+        <result column="cou_type_id" property="couTypeId"/>
+        <result column="parent_type_id" property="parentTypeId"/>
+        <result column="type_name" property="typeName"/>
+    </resultMap>
+    <resultMap id="couAllNumMap" type="CouAllNumVO">
+        <id property="id" column="id"/>
+        <result column="cou_cata_num" property="couCataNum"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="cou_share_num" property="couShareNum"/>
+        <result column="clicks" property="clicks"/>
+        <result column="purchase_num" property="purchaseNum"/>
+        <result column="evaluate_num" property="evaluateNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+    </resultMap>
+    <resultMap id="couVO" type="com.wisdom.course.bean.vo.CouVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_name" property="couName"/>
+        <result column="cou_price" property="couPrice"/>
+        <result column="cou_cata_num" property="couCataNum"/>
+        <result column="cou_introduction" property="couIntroduction"/>
+        <result column="cou_pic" property="couPic"/>
+    </resultMap>
+    <resultMap id="chapVO" type="com.wisdom.chapter.bean.vo.ChapVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="cha_id" property="chaId"/>
+        <result column="cha_title" property="chaTitle"/>
+        <result column="cha_time" property="chaTime"/>
+    </resultMap>
+    <resultMap id="anyFieryCourseMap" type="AnyFieryCourseVO">
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_pic" property="couPic"/>
+        <result column="create_time" property="createTime"/>
+        <result column="cou_price" property="couPrice"/>
+        <result column="cou_coll_num" property="couCollNum"/>
+        <result column="cou_share_num" property="couShareNum"/>
+        <result column="clicks" property="clicks"/>
+        <result column="purchase_num" property="purchaseNum"/>
+        <result column="evaluate_num" property="evaluateNum"/>
+        <result column="recommend_num" property="recommendNum"/>
+    </resultMap>
+    <resultMap id="courseTypeMap" type="com.wisdom.type.bean.vo.TypeVO">
+        <result column="type_name" property="typeName"/>
+        <result column="cou_type_id" property="parentTypeId"/>
+        <result column="cou_type_id" property="couTypeId"/>
+    </resultMap>
+    <resultMap id="simpleCourseMap" type="SimpleAnyFieryCourseVO">
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_pic" property="couPicName"/>
+        <result column="create_time" property="createTimeE"/>
+    </resultMap>
+    <resultMap id="TypeVO" type="com.wisdom.type.bean.vo.TypeVO">
+        <id property="id" column="id"/>
+        <result column="cou_type_id" property="couTypeId"/>
+        <result column="parent_type_id" property="parentTypeId"/>
+        <result column="type_name" property="typeName"/>
+        <result column="img" property="img"/>
+    </resultMap>
+    <resultMap id="couAppraiseVO" type="CouAppraiseVO">
+        <id property="id" column="id"/>
+        <result column="cou_id" property="couId"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="cou_appraise" property="couAppraise"/>
+        <result column="evaluate_score" property="evScore"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <resultMap id="chapterVO" type="com.wisdom.chapter.bean.vo.ChapterVO">
+        <id property="id" column="id" />
+        <result property="couId" column="cou_id"/>
+        <result property="chaId" column="cha_id"/>
+        <result property="chaTitle" column="cha_title"/>
+        <result property="chaUrl" column="cha_url"/>
+        <result property="chaTime" column="cha_time"/>
+    </resultMap>
+
+    <insert id="addCourseAndType" parameterType="CouAndTypeDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO course_and_type (`cou_type_id`, `cou_id`)
+        VALUES (#{couTypeId}, #{couId});
+    </insert>
+    <insert id="addCourseInteraction">
+        INSERT INTO course_interaction (`cou_id`, `stu_id`)
+        VALUES (#{arg0}, #{arg1});
+    </insert>
+
+    <update id="upCourseAndType" parameterType="CouUpTypeDTO" >
+        UPDATE course_and_type SET cou_type_id = #{couTypeId}, update_time = now()
+        WHERE cou_id = #{couId} AND deleted = 0
+    </update>
+    <update id="updateCouInteraction" parameterType="CouInteractionUpDTO" >
+        UPDATE course_interaction
+        <set>
+            <if test="collect!=null">
+                collect=#{collect},
+            </if>
+            <if test="cart!=null">
+                cart=#{cart},
+            </if>
+            <if test="have!=null">
+                have=#{have}
+            </if>
+            <if test="recommend!=null">
+                recommend=#{recommend},
+            </if>
+            <if test="evaluate!=null">
+                evaluate=#{evaluate},
+            </if>
+            <if test="share!=null">
+                share=#{share}
+            </if>
+        </set>
+        WHERE cou_id = #{couId} AND stu_id = #{stuId} AND deleted = 0
+    </update>
+
+    <select id="getVersion" parameterType="long" resultType="int">
+        SELECT version FROM course WHERE id = #{id}
+    </select>
+    <select id="selectCourseByClassId" parameterType="long" resultMap="selectAllCourseByCSId">
+        SELECT DISTINCT <include refid="cla_cou_a_type_a_tea"/>
+        FROM course cou
+        LEFT JOIN cou_class coc
+        ON cou.cou_id = coc.cou_id
+        LEFT JOIN class cla
+        ON cla.class_id = coc.class_id
+        LEFT JOIN teacher tea
+        ON tea.tea_id = cou.tea_id
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE cla.class_id = #{classId} AND cou.deleted = 0 AND coc.deleted = 0 AND cla.deleted = 0 AND cat.deleted = 0
+    </select>
+    <select id="selectCourseIdByClassId" parameterType="long" resultType="long">
+        SELECT DISTINCT cou.cou_id
+        FROM course cou
+                 LEFT JOIN cou_class coc
+                           ON cou.cou_id = coc.cou_id
+                 LEFT JOIN class cla
+                           ON cla.class_id = coc.class_id
+        WHERE cla.class_id = #{classId} AND cou.deleted = 0 AND coc.deleted = 0 AND cla.deleted = 0
+    </select>
+    <select id="selectAllCourse" resultMap="selectCourseByCSId">
+        SELECT DISTINCT <include refid="cou_a_type_a_tea"/>
+        FROM course cou
+        LEFT JOIN teacher tea
+        ON tea.tea_id = cou.tea_id
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE cou.deleted = 0 AND cat.deleted = 0
+        limit #{arg0}, #{arg1}
+    </select>
+    <select id="selectAllCourseComplete" resultMap="selectCourseByCSId">
+        SELECT DISTINCT <include refid="cou_a_type_a_tea"/>
+        FROM course cou
+        LEFT JOIN teacher tea
+        ON tea.tea_id = cou.tea_id
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE cou.deleted = 0 AND cat.deleted = 0
+    </select>
+    <select id="queryCourseByClassId" parameterType="long" resultMap="courseByCSId">
+        SELECT DISTINCT <include refid="course_and_type"/>
+        FROM course cou
+        LEFT JOIN cou_class coc
+        ON cou.cou_id = coc.cou_id
+        LEFT JOIN class cla
+        ON cla.class_id = coc.class_id
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE cla.class_id = #{classId} AND cou.deleted = 0 AND coc.deleted = 0 AND cla.deleted = 0 AND cat.deleted = 0
+    </select>
+    <select id="getCourseByCouId" resultMap="CourseVO">
+        SELECT *
+        FROM course WHERE cou_id IN
+        <foreach collection="couId" item="couId" index="index" open="(" close=")" separator=",">
+            #{couId}
+        </foreach>
+        AND deleted = 0
+    </select>
+    <select id="getCourPriceByCouId" resultType="int">
+        SELECT cou_price
+        FROM course WHERE cou_id IN
+        <foreach collection="couId" item="couId" index="index" open="(" close=")" separator=",">
+            #{couId}
+        </foreach>
+        AND deleted = 0
+    </select>
+    <select id="courseDetailByCouId" parameterType="long" resultMap="CourseVO">
+        SELECT * FROM course WHERE cou_id = #{couId} AND deleted = 0
+    </select>
+    <select id="getChaIdsByCouId" parameterType="long" resultType="long">
+        SELECT cha_id FROM chapter WHERE cou_id = #{couId} AND deleted = 0
+    </select>
+    <select id="getCourseByStuId" parameterType="long" resultMap="courseByCSId">
+        SELECT DISTINCT <include refid="course_and_type"/>
+        FROM student stu
+        LEFT JOIN stu_cou stc
+        ON stc.stu_id = stu.stu_id
+        LEFT JOIN course cou
+        ON cou.cou_id = stc.cou_id
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE  stu.stu_id = #{stuId} AND stu.deleted = 0 AND stc.deleted = 0 AND cou.deleted = 0 AND cat.deleted = 0
+    </select>
+    <select id="classQueryAllCourse" parameterType="string" resultMap="classAllCouMap">
+        SELECT cou_id, tea_id, cou_name, cou_pic, recommend_num, cou_coll_num
+        FROM course
+        WHERE deleted = 0
+    </select>
+    <select id="teaQueryAllCourse" parameterType="long" resultMap="teaQueryAllCourseMap">
+        SELECT DISTINCT <include refid="course_type_detailed"/>
+        FROM course cou
+        LEFT JOIN course_and_type cat
+        ON cat.cou_id = cou.cou_id
+        LEFT JOIN `type` typ1
+        ON typ1.cou_type_id = cat.cou_type_id
+        LEFT JOIN `type` typ2
+        ON typ2.cou_type_id = typ1.parent_type_id
+        WHERE  cou.tea_id = #{teaId} AND cou.deleted = 0 AND cat.deleted = 0
+    </select>
+    <select id="getAllType" resultMap="allType">
+        SELECT cou_type_id, parent_type_id, type_name
+        FROM `type`
+    </select>
+    <select id="getCourseInteraction" resultType="CourseInteractionVO">
+        SELECT collect, cart, have, recommend, evaluate, share, create_time, update_time
+        FROM course_interaction
+        WHERE cou_id = #{arg0} AND stu_id = #{arg1} AND deleted = 0
+    </select>
+    <select id="getCouAllNum" parameterType="long" resultMap="couAllNumMap">
+        SELECT id, cou_cata_num, cou_coll_num, cou_share_num, clicks, purchase_num, evaluate_num, recommend_num
+        FROM course
+        WHERE cou_id = #{couId} AND deleted = 0
+    </select>
+    <select id="getStuCouProgress" resultType="long">
+        SELECT MAX(end_time)
+        FROM stu_cou_progress
+        WHERE cou_id = #{couId} AND stu_id = #{stuId} AND deleted = 0
+        GROUP BY cha_id
+    </select>
+    <select id="getStuClassCouProgress" resultType="long">
+        SELECT MAX(end_time)
+        FROM learning_progress
+        WHERE cou_id = #{couId} AND stu_id = #{stuId} AND deleted = 0
+        GROUP BY cha_id
+    </select>
+    <select id="getCouProgress" resultType="long">
+        SELECT cha_time
+        FROM chapter
+        WHERE cou_id = #{couId} AND deleted = 0
+    </select>
+    <select id="getCouFirstChaURL" resultType="string">
+        SELECT cha_url
+        FROM chapter
+        WHERE cou_id = #{couId} AND deleted = 0
+        ORDER BY cha_index LIMIT 0,1
+    </select>
+    <select id="getCouPrice" resultType="int">
+        select cou_price from course where cou_id = #{couId}
+    </select>
+    <select id="collectionType" resultType="long">
+        select t.cou_type_id from type t
+                                      left join course_and_type cat
+                                                on cat.cou_type_id = t.cou_type_id
+                                      left join course c
+                                                on c.cou_id = cat.cou_id
+                                      left join stu_cou_colletion scc
+                                                on scc.cou_id and c.cou_id where scc.stu_id = #{stuId} GROUP BY t.cou_type_id
+    </select>
+    <select id="preType" resultType="long">
+        select t.cou_type_id from type t
+                                      left join course_and_type cat
+                                                on cat.cou_type_id = t.cou_type_id
+                                      left join course c
+                                                on c.cou_id = cat.cou_id
+                                      left join stu_cou_cart scc
+                                                on scc.cou_id and c.cou_id where scc.stu_id = #{stuId} GROUP BY t.cou_type_id
+    </select>
+    <select id="clasCouType" resultType="long">
+        select t.cou_type_id from type t
+                                      left join course_and_type cat
+                                                on cat.cou_type_id = t.cou_type_id
+                                      left join course c
+                                                on c.cou_id = cat.cou_id
+                                      left join cou_class cc
+                                                on c.cou_id = cc.cou_id
+                                      left join class cla
+                                                on cla.class_id = cc.class_id
+                                      left join stu_class sc
+                                                on sc.class_id = cla.class_id
+        where sc.stu_id = #{stuId} GROUP BY t.cou_type_id
+    </select>
+    <select id="couType" resultType="long">
+        select t.cou_type_id from type t
+                                      left join course_and_type cat
+                                                on cat.cou_type_id = t.cou_type_id
+                                      left join course c
+                                                on c.cou_id = cat.cou_id
+                                      left join stu_cou sc
+                                                on sc.cou_id = c.cou_id
+        where sc.stu_id = #{stuId} GROUP BY t.cou_type_id
+    </select>
+    <select id="recommendCourse" resultMap="CourseVO">
+        select c.* from course c
+        left join course_and_type cat
+        on cat.cou_id = c.cou_id
+        where c.deleted = 0 and cat.cou_type_id in
+        <foreach collection="couTypeId" item="couTypeId" index="index" open="(" close=")" separator=",">
+            #{couTypeId}
+        </foreach>
+        LIMIT 0,6
+    </select>
+    <select id="recommendType" resultMap="TypeVO">
+        select * from type where cou_type_id in (select parent_type_id from type where cou_type_id in
+        <foreach collection="couTypeId" item="couTypeId" index="index" open="(" close=")" separator=",">
+            #{couTypeId}
+        </foreach>
+        ) and parent_type_id is null LIMIT 0,3
+    </select>
+    <select id="maxClickCourse" resultMap="CourseVO">
+        select * from course order by cou_coll_num desc LIMIT 0,#{num}
+    </select>
+    <select id="maxClickType" resultMap="TypeVO">
+        select * from type where parent_type_id is null and cou_type_id in (
+            select t.parent_type_id from type t
+                                             left join course_and_type cat
+                                                       on cat.cou_type_id = t.cou_type_id
+                                             left join course c
+                                                       on c.cou_id = cat.cou_id where t.parent_type_id is not null GROUP BY cou_coll_num order by c.cou_coll_num desc
+        ) LIMIT 0,3
+    </select>
+    <select id="courseDetail" resultMap="courseDetailedVO">
+        select t.tea_name,c.* from course c left join teacher t on t.tea_id = c.tea_id where c.cou_id = #{couId}
+    </select>
+    <select id="getRelatedCourse" resultMap="couVO">
+        select t.tea_name,c.* from course c left join teacher t on t.tea_id = c.tea_id where c.cou_id != #{couId} and c.cou_id in (select cou_id from course_and_type where cou_type_id in (select cou_type_id from course_and_type where cou_id = #{couId})) order by c.cou_share_num desc LIMIT 0,3
+    </select>
+    <select id="allChapterByCouId" resultMap="chapVO">
+        select * from chapter where cou_id = #{couId} order by cha_index asc
+    </select>
+    <select id="search" resultMap="couVO">
+        select te.tea_name, cou.* from course cou left join teacher te on te.tea_id =  cou.tea_id where cou.cou_id in (select c.cou_id from course c where c.cou_id in (select cat.cou_id from course_and_type cat where cat.cou_type_id in (select t.cou_type_id from type t where t.parent_type_id in (select t1.cou_type_id from type t1 where CONCAT( IFNULL(t1.type_name,'')) LIKE CONCAT('%',#{val},'%'))))
+            or c.cou_id in (select cat1.cou_id from course_and_type cat1 where cat1.cou_type_id in (select t1.cou_type_id from type t1 where CONCAT( IFNULL(t1.type_name,'')) LIKE CONCAT('%',#{val},'%')))
+            or c.tea_id in (select tea.tea_id from teacher tea where CONCAT( IFNULL(tea.tea_name,'')) LIKE CONCAT('%',#{val},'%'))
+            or CONCAT( IFNULL(c.cou_name,''),IFNULL(c.cou_introduction,'')) LIKE CONCAT('%',#{val},'%'))
+                and cou.deleted = 0
+    </select>
+    <select id="getClaCourseAllCha" resultMap="chapterVO">
+        select * from chapter where cou_id = #{couId} order by cha_index asc
+    </select>
+    <select id="addClick">
+        insert user_click(user_id, click_id) values (#{stuId}, #{couId})
+    </select>
+    <select id="isClick" resultType="int">
+        select count(*) from user_click where click_id = #{couId} and user_id = #{stuId}
+    </select>
+    <select id="deletedClick">
+        delete from user_click where click_id = #{couId} and user_id = #{stuId}
+    </select>
+    <select id="updateCouClick">
+        update course set recommend_num = #{recommendNum} where cou_id = #{couId}
+    </select>
+    <select id="seeMore" resultMap="couVO">
+        select te.tea_name, c.* from course c left join teacher te on te.tea_id =  c.tea_id where c.deleted = 0
+        <if test="maxTypeId != 0L and minTypeId == 0L">
+            and c.cou_id in (select cat.cou_id from course_and_type cat  where cat.cou_type_id in (select t.cou_type_id from type t where t.parent_type_id = #{maxTypeId}))
+        </if>
+        <if test="maxTypeId != 0L and minTypeId != 0L">
+            and c.cou_id in (select cat.cou_id from course_and_type cat  where cat.cou_type_id = #{minTypeId})
+        </if>
+        <choose>
+            <when test="couPrice == 1 and clickNum == 1">
+                order by c.cou_price asc, c.purchase_num asc
+            </when>
+            <when test="couPrice == 1 and clickNum == 2">
+                order by c.cou_price asc, c.purchase_num desc
+            </when>
+            <when test="couPrice == 2 and clickNum == 1">
+                order by c.cou_price desc, c.purchase_num asc
+            </when>
+            <when test="couPrice == 2 and clickNum == 2">
+                order by c.cou_price desc, c.purchase_num desc
+            </when>
+            <when test="couPrice == 1">
+                order by c.cou_price asc
+            </when>
+            <when test="couPrice == 2">
+                order by c.cou_price desc
+            </when>
+            <when test="clickNum == 1">
+                order by c.purchase_num asc
+            </when>
+            <when test="clickNum == 2">
+                order by c.purchase_num desc
+            </when>
+        </choose>
+    </select>
+    <select id="getType" resultMap="TypeVO">
+        select t.* from type t left join course_and_type cat on cat.cou_type_id = t.cou_type_id where cat.cou_id = #{couId}
+    </select>
+    <select id="getTypeName" parameterType="long" resultType="string">
+        select type_name from type where cou_type_id = #{couTypeId}
+    </select>
+    <select id="getCouIntroduction" resultType="string">
+        select cou_introduction from course where cou_id = #{couId}
+    </select>
+    <select id="getClicks" resultType="long">
+        select recommend_num from course where cou_id = #{couId}
+    </select>
+    <select id="updatePurNum">
+        update course set purchase_num = #{purchaseNum} where cou_id = #{couId} and deleted = 0
+    </select>
+    <select id="courseAppraise" resultMap="couAppraiseVO">
+        select * from course_appraise where cou_id = #{couId}
+    </select>
+    <select id="getCouAppraiseVO" resultMap="couAppraiseVO">
+        select * from course_appraise where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="getAllCouScore" resultType="long">
+        select sum(evaluate_score) from course_appraise where cou_id = #{couId}
+    </select>
+    <select id="getColletion" resultType="long">
+        select cou_coll_num from course where cou_id = #{couId}
+    </select>
+    <select id="addCouAppraise">
+        insert course_appraise(cou_id, stu_id, cou_appraise, evaluate_score) values (#{couId}, #{stuId}, #{couAppraise}, #{evaluateScore})
+    </select>
+    <select id="updateCouAppraise">
+        update course_appraise set cou_appraise = #{couAppraise}, evaluate_score = #{evaluateScore} where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="getTotal" resultType="int">
+        select count(*) from course_appraise where cou_id = #{couId}
+    </select>
+    <select id="getCataNumByCouId" resultType="int">
+        select count(*) from chapter where cou_id = #{couId}
+    </select>
+    <select id="selectCourseName" parameterType="long" resultType="string">
+        select cou_name from course where cou_id = #{couId}
+    </select>
+    <select id="getAllAnyFieryCourse" resultMap="anyFieryCourseMap">
+        SELECT DISTINCT <include refid="any_fiery_course"/>
+        FROM course cou
+        LEFT JOIN teacher tea
+        ON tea.tea_id = cou.tea_id
+        WHERE cou.deleted = 0
+    </select>
+    <select id="getParentTypeId" resultMap="courseTypeMap">
+        SELECT type_name, cou_type_id FROM `type` WHERE parent_type_id is NULL
+    </select>
+    <select id="getCouTypeByParentTypeId" parameterType="long" resultMap="courseTypeMap">
+        SELECT type_name, cou_type_id FROM `type` WHERE parent_type_id = #{parentTypeId}
+    </select>
+    <select id="getCourseByInfo" resultMap="simpleCourseMap">
+        SELECT DISTINCT cou.cou_id, cou.cou_name, tea.tea_name, cou.cou_pic, cou.create_time
+        FROM course cou
+                 LEFT JOIN teacher tea
+                           ON tea.tea_id = cou.tea_id
+                 LEFT JOIN course_and_type couat
+                           ON couat.cou_id = cou.cou_id
+        WHERE cou.deleted = 0
+          AND (cou.cou_name LIKE concat("%",#{courseInfo},"%")
+            OR tea.tea_name LIKE concat("%",#{courseInfo},"%")
+            OR couat.cou_type_id = #{courseInfo})
+    </select>
+    <select id="getFieryCouTypeId" resultType="map">
+        SELECT couat.cou_type_id, couat.cou_id, typ.type_name
+        FROM course_and_type couat
+                 LEFT JOIN `type` typ
+                           ON typ.cou_type_id = couat.cou_type_id
+        WHERE couat.deleted = 0
+    </select>
+    <select id="addScore">
+        insert stu_score(stu_id, score_type, score) values (#{stuId}, #{scoreType}, #{score})
+    </select>
+</mapper>

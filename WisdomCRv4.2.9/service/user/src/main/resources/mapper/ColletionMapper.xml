@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.ColletionMapper">
+    <select id="getCouIdByStuId" parameterType="long" resultType="long">
+        select cou_id from stu_cou_colletion where stu_id = #{stuId}
+    </select>
+    <select id="deleted">
+        delete from stu_cou_colletion where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="add">
+        INSERT stu_cou_colletion(stu_id, cou_id) VALUES (#{stuId}, #{couId})
+    </select>
+    <select id="isCollection" resultType="int">
+        select count(*) from stu_cou_colletion where stu_id = #{stuId} and cou_id = #{couId}
+    </select>
+    <select id="updateCouCollNum">
+        update course set cou_coll_num = #{couCollNum} where cou_id = #{couId}
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.NoticeMapper">
+
+    <resultMap id="noticeVO" type="com.wisdom.user.bean.vo.NoticeVO">
+        <id property="id" column="id"/>
+        <result property="noticeId" column="notice_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="isPass" column="is_pass"/>
+    </resultMap>
+
+    <select id="deleted">
+        update notice set deleted = 1 where notice_id = #{nId}
+    </select>
+
+    <select id="appliAuditText">
+        update audit_text set audit_result = 1 where audit_id = #{noticeId} and audit_result = 0
+    </select>
+
+    <select id="appliAuditImg">
+        update audit_img set audit_result = 1 where audit_id =  #{noticeId} and audit_result = 0
+    </select>
+
+    <select id="addNotice">
+        insert notice(notice_id, user_id) values (#{noticeId}, #{userId})
+    </select>
+
+    <select id="isPass" resultType="int">
+        select is_pass from notice where notice_id = #{noticeId} and deleted = 0
+    </select>
+
+    <select id="updateNotice">
+        update notice set is_pass = #{isPass} where notice_id = #{noticeId}
+    </select>
+
+    <select id="isExist" resultMap="noticeVO">
+        select * from notice where notice_id = #{noticeId}
+    </select>
+
+    <select id="updateNoticeState">
+        update notice set is_pass = #{isPass}, deleted = #{deleted} where notice_id = #{noticeId}
+    </select>
+
+</mapper>

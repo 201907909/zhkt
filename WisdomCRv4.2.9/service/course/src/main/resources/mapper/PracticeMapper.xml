@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.course.mapper.PracticeMapper">
+    <sql id="practice">
+        pra.id, pra.pra_id, pra.tea_id, tea.tea_name, cou.cou_name, typ.type_name, pra.pra_name, pra.pra_site, pra.pra_main, pra.pra_img, pra.good_number, pra.create_time
+    </sql>
+    <sql id="simplePractice">
+        pra.id, pra.pra_id, pra.pra_name, tea.tea_name, pra.pra_site, pra.pra_main, pra.pra_img, pra.is_end, pra.create_time
+    </sql>
+
+    <resultMap id="practiceUpMap" type="com.wisdom.practice.bean.vo.PracticeUpVO">
+        <id property="id" column="id"/>
+        <result column="pra_id" property="praId"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="cou_name" property="couName"/>
+        <result column="type_name" property="praType"/>
+        <result column="pra_name" property="praName"/>
+        <result column="pra_site" property="praSite"/>
+        <result column="pra_main" property="praMain"/>
+        <result column="pra_img" property="praImgName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="good_number" property="goodNumber"/>
+    </resultMap>
+    <resultMap id="practiceTypeMap" type="com.wisdom.type.bean.vo.TypeVO">
+        <result column="type_name" property="typeName"/>
+        <result column="cou_type_id" property="praTypeId"/>
+    </resultMap>
+    <resultMap id="allCourseMap" type="com.wisdom.course.bean.vo.CourseAddVO">
+        <result column="cou_id" property="couId"/>
+        <result column="cou_name" property="couName"/>
+    </resultMap>
+    <resultMap id="stuPracticeMap" type="com.wisdom.practice.bean.vo.StuPracticeVO">
+        <result column="is_end" property="isEnd"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+    <resultMap id="simplePracticeMap" type="com.wisdom.practice.bean.vo.SimplePracticeVO">
+        <id property="id" column="id"/>
+        <result column="pra_id" property="praId"/>
+        <result column="pra_name" property="praName"/>
+        <result column="tea_name" property="teaName"/>
+        <result column="pra_site" property="praSite"/>
+        <result column="pra_main" property="praMain"/>
+        <result column="pra_img" property="praImgName"/>
+        <result column="is_end" property="isEndP"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="addPracticeDate" parameterType="long">
+        INSERT INTO practice_date (`pra_id`)
+        VALUES (#{praId});
+    </insert>
+    <insert id="joinPractice" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO">
+        INSERT INTO stu_practice (`stu_id`,`pra_id`)
+        VALUES (#{stuId},(SELECT pra_id FROM practice WHERE pra_id = #{praId} AND is_end = 0));
+    </insert>
+
+    <update id="deletedPracticeDate" parameterType="long">
+        UPDATE practice_date
+        SET deleted = 1
+        WHERE pra_id = #{praId} AND deleted = 0
+    </update>
+    <update id="upJoinPractice" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO">
+        UPDATE stu_practice
+        SET deleted = #{state}
+        WHERE stu_id = #{stuId} AND pra_id = (SELECT pra_id FROM practice WHERE pra_id = #{praId} AND is_end = 0 AND deleted = 0) AND is_end = 0
+    </update>
+    <update id="upSubmitPractice" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO">
+        UPDATE stu_practice
+        SET is_end = #{state}
+        WHERE stu_id = #{stuId} AND pra_id = (SELECT pra_id FROM practice WHERE pra_id = #{praId} AND is_end = 0 AND deleted = 0) AND deleted = 0
+    </update>
+    <update id="upPracticeDateActivity" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO">
+        UPDATE practice_date prad1
+            INNER JOIN (SELECT prad2.activity,prad2.id FROM practice_date prad2 WHERE prad2.pra_id = #{praId} AND DATE_FORMAT(prad2.create_time,'%Y-%m-%d') = #{createTime}) prad3 ON prad1.id = prad3.id
+            SET prad1.activity = prad3.activity + #{activity}, prad1.version = #{praDateVersion} + 1
+        WHERE prad1.pra_id = (SELECT pra_id FROM practice WHERE pra_id = #{praId} AND is_end = 0 AND deleted = 0) AND prad1.version = #{praDateVersion} AND prad1.deleted = 0
+    </update>
+    <update id="upPracticeGoodNum" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO">
+        UPDATE practice pra1
+            INNER JOIN (SELECT pra2.good_number,pra2.id FROM practice pra2 WHERE pra2.pra_id = #{praId}) pra3 ON pra1.id = pra3.id
+            SET pra1.good_number = pra3.good_number + #{score}, pra1.version = #{praVersion} + 1
+        WHERE pra1.is_end = 0 AND pra1.version = #{praVersion} AND pra1.deleted = 0
+    </update>
+
+    <select id="getPraImgById" resultType="string">
+        select pra_img from practice where id = #{id} AND deleted = 0 AND is_end = 0
+    </select>
+    <select id="getPraCouTypeByPraTypeId" resultType="string">
+        select type_name from `type` where cou_type_id = #{praTypeId}
+    </select>
+    <select id="getPraJoinNumberByPraId" resultType="int">
+        select count(stu_id) from stu_practice where pra_id = #{praId} AND deleted = 0
+    </select>
+    <select id="getPraCompleteNumberByPraId" resultType="int">
+        select count(stu_id) from stu_practice where pra_id = #{praId} AND is_end = 1 AND deleted = 0
+    </select>
+    <select id="getAllPracticeInfoByTea" resultMap="practiceUpMap">
+        SELECT <include refid="practice"/>
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        LEFT JOIN `type` typ
+        ON typ.cou_type_id = pra.pra_type_id
+        LEFT JOIN course cou
+        ON cou.cou_id = pra.cou_id
+        WHERE pra.deleted = 0 AND cou.deleted = 0 AND pra.is_end = 0
+    </select>
+    <select id="getAllPracticeType" resultMap="practiceTypeMap">
+        SELECT type_name, cou_type_id FROM `type` WHERE parent_type_id is NULL
+    </select>
+    <select id="getAllCourseByTeaId" resultMap="allCourseMap">
+        SELECT cou_id, cou_name FROM course WHERE tea_id = #{teaId} AND deleted = 0
+    </select>
+    <select id="getPracticeByInfo" resultMap="practiceUpMap">
+        SELECT <include refid="practice"/>
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        LEFT JOIN `type` typ
+        ON typ.cou_type_id = pra.pra_type_id
+        LEFT JOIN course cou
+        ON cou.cou_id = pra.cou_id
+        WHERE pra.deleted = 0 AND cou.deleted = 0 AND pra.is_end = 0
+        AND (pra.pra_name LIKE concat("%",#{info},"%")
+        OR tea.tea_name LIKE concat("%",#{info},"%")
+        OR typ.type_name LIKE concat("%",#{info},"%")
+        OR cou.cou_name LIKE concat("%",#{info},"%")
+        OR typ.cou_type_id = #{info})
+    </select>
+    <select id="getOverduePractice" resultMap="practiceUpMap">
+        SELECT <include refid="practice"/>
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        LEFT JOIN `type` typ
+        ON typ.cou_type_id = pra.pra_type_id
+        LEFT JOIN course cou
+        ON cou.cou_id = pra.cou_id
+        WHERE pra.deleted = 0 AND cou.deleted = 0 AND pra.is_end = 1
+    </select>
+    <select id="getPraClass" resultType="string">
+        SELECT cla.class_name
+        FROM stu_practice spra
+        LEFT JOIN stu_class scla
+        ON spra.stu_id = scla.stu_id
+        LEFT JOIN class cla
+        ON cla.class_id = scla.class_id
+        WHERE spra.deleted = 0 AND scla.deleted = 0 AND cla.deleted = 0 AND spra.pra_id = #{praId}
+    </select>
+    <select id="getBeforeAndAfterDateData" resultType="map">
+        SELECT DATE_FORMAT(practice_date.create_time,'%m-%d') as create_time, activity
+        FROM practice_date
+        WHERE pra_id = #{praId} AND deleted = 0
+        ORDER BY create_time
+    </select>
+    <select id="getPracticeIsEnd" resultType="int">
+        SELECT is_end FROM practice WHERE id = #{id} AND deleted = 0
+    </select>
+    <select id="getPracticeId" resultType="long">
+        SELECT pra_id FROM practice WHERE id = #{id} AND deleted = 0 AND is_end = 0
+    </select>
+    <select id="getStuPractice" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO" resultMap="stuPracticeMap">
+        SELECT is_end,deleted FROM stu_practice WHERE stu_id = #{stuId} AND pra_id = #{praId}
+    </select>
+    <select id="getPracticeDateVersion" parameterType="com.wisdom.practice.bean.dto.StuPracticeDTO" resultType="int">
+        SELECT version FROM practice_date WHERE pra_id = #{praId} AND DATE_FORMAT(practice_date.create_time,'%Y-%m-%d') = #{createTime} AND deleted = 0
+    </select>
+    <select id="getPracticeVersion" parameterType="long" resultType="int">
+        SELECT version FROM practice WHERE pra_id = #{praId} AND deleted = 0 AND is_end = 0
+    </select>
+    <select id="getAllPracticeSimpleInfo" resultMap="simplePracticeMap">
+        SELECT pra.id, pra.pra_name, tea.tea_name, pra.pra_img
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        WHERE pra.deleted = 0 AND pra.cou_id = #{couId}
+    </select>
+    <select id="getPracticeSimpleInfo" resultMap="simplePracticeMap">
+        SELECT <include refid="simplePractice"/>
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        WHERE pra.deleted = 0 AND pra.id = #{id}
+    </select>
+    <select id="getStuPracticeState" resultType="int">
+        SELECT spra.deleted
+        FROM practice pra
+        LEFT JOIN stu_practice spra
+        ON spra.pra_id = pra.pra_id
+        WHERE pra.deleted = 0 AND pra.is_end = 0 AND pra.id = #{arg0} AND spra.stu_id = #{arg1}
+    </select>
+    <select id="getStuPracticeIsEnd" resultType="int">
+        SELECT spra.is_end
+        FROM practice pra
+        LEFT JOIN stu_practice spra
+        ON spra.pra_id = pra.pra_id
+        WHERE pra.deleted = 0 AND pra.is_end = 0 AND pra.id = #{arg0} AND spra.stu_id = #{arg1}
+    </select>
+    <select id="getPracticeSimpleByInfo" resultMap="simplePracticeMap">
+        SELECT pra.id, pra.pra_name, tea.tea_name, pra.pra_img
+        FROM practice pra
+        LEFT JOIN teacher tea
+        ON tea.tea_id = pra.tea_id
+        WHERE pra.deleted = 0 AND pra.cou_id = #{arg1}
+        AND (pra.pra_name LIKE concat("%",#{arg0},"%")
+        OR tea.tea_name LIKE concat("%",#{arg0},"%"))
+    </select>
+</mapper>

@@ -1,0 +1,91 @@
+# 端口
+server:
+  port: ${port:8003}
+
+# 服务名称、微服务配置、邮件配置、Redis配置
+spring:
+  application:
+    name: course
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      filter:
+        # 开启/关闭对spring mav端点的保护
+        enabled: true
+      transport:
+        dashboard: localhost:8718
+      eager: true
+  mail: # 配置发送告警的邮箱
+    name: WisdomCR
+    username: vwanbao@163.com
+    password: CRDTJNZFARCFJEQW
+    host: smtp.163.com
+    default-encoding: UTF-8
+  boot:
+    admin:
+      client:
+        username: admin
+        password: 123456
+      notify:
+        mail:
+          to: ${spring.mail.username} # 告警收件人
+          from: ${spring.mail.username} # 告警发件人
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: "011224"
+    url: jdbc:mysql://1.12.246.81:23306/zhkt?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+  redis:
+    host: 1.12.246.81
+    port: 6379
+    password: 123456
+    database: 0
+    timeout: 5000
+    jedis:
+      pool:
+        max-active: 8    #连接池最大连接数(使用负值表示没有限制)
+        max-wait: -1     #最大阻塞等待时间(使用负值表示没有限制)
+        max-idle: 8      #最大空闲连接数
+        min-idle: 0      #最小空闲连接数
+  jackson:
+    time-zone: GMT+8
+  main:
+    allow-bean-definition-overriding: true
+
+# 日志、逻辑删除
+mybatis-plus:
+  type-aliases-package: com.wisdom.course
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 端点配置
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    enabled-by-default: true
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+
+info:
+  app.name: ${spring.application.name}
+
+filesonpath: /service/file/
+ffmpeg: /service/course/src/main/java/com/wisdom/course/utils/ffmpeg.exe
+
+APP_ID: "28812873"
+API_KEY: "PtllltYKmOqmmlY5hOWkC2iQ"
+SECRET_KEY: "9h9LN7I47FjKfHAffczbI1waaqzYK6Cy"
+ACCESS_KEY: "0_w2hG8yFDnBLd7a_2Nzq3hBoKNGKBSCHA8cIe_4"
+QSECRET_KEY: "w3EqA8Ggfc_v8BnRHxpyruK6wBwpQhAaNGyWNyd0"
+bucketname: "cb-123456"

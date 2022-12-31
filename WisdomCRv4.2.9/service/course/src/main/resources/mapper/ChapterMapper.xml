@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.course.mapper.ChapterMapper">
+    <resultMap id="chapterVO" type="com.wisdom.chapter.bean.vo.ChapterVO">
+        <id property="id" column="id" />
+        <result property="couId" column="cou_id"/>
+        <result property="chaId" column="cha_id"/>
+        <result property="chaTitle" column="cha_title"/>
+        <result property="chaUrl" column="cha_url"/>
+        <result property="chaTime" column="cha_time"/>
+    </resultMap>
+    <select id="getClaCourseAllCha" resultMap="chapterVO">
+        select * from chapter where cou_id = #{couId} and deleted = 0 order by cha_id asc
+    </select>
+</mapper>

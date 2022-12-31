@@ -1,0 +1,46 @@
+package com.wisdom.user.bean.dto;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import java.io.Serializable;
+
+/**
+ * @author WisdomCR
+ * @since 2022/11/13
+ */
+@Data
+@Accessors(chain = true)
+@ApiModel(value = "StuCourseProDTO",description = "学生购买课程学习进度DTO对象")
+public class AddStuCourseProDTO implements Serializable {
+    @ApiModelProperty("主键ID，前端无需提供")
+    @Null(message = "主键ID不能为空")
+    private Long id;
+
+    @ApiModelProperty("学生ID")
+    @Null(message = "前端无需提供，后端获取")
+    private Long stuId;
+
+    @ApiModelProperty("课程ID")
+    @NotNull(message = "课程ID不能为空")
+    private Long couId;
+
+    @ApiModelProperty("章节ID")
+    @NotNull(message = "章节ID不能为空")
+    private Long chaId;
+
+    @ApiModelProperty("父章节ID，可为空")
+    private Long faChaId;
+
+    @ApiModelProperty("最新观看时长,单位：秒")
+    @NotNull(message = "最新观看时长不能为空")
+    private Long startTime;
+
+    @ApiModelProperty("最长观看时长,单位：秒")
+    @Null(message = "前端无需提供")
+    private Long endTime;
+}

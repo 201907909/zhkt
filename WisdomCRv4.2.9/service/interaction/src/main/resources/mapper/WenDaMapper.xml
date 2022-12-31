@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.interaction.mapper.WenDaMapper">
+
+    <resultMap id="maxTypeVO" type="com.wisdom.interlocution.bean.vo.MaxTypeVO">
+        <id property="id" column="id" />
+        <result property="maxTypeId" column="cou_type_id"/>
+        <result property="label" column="type_name"/>
+        <collection property="children" column="cou_type_id" javaType="ArrayList" ofType="com.wisdom.interlocution.bean.vo.MinTypeVO" select="getMinTypeList"/>
+    </resultMap>
+    <resultMap id="minTypeVO" type="com.wisdom.interlocution.bean.vo.MinTypeVO">
+        <id property="id" column="id" />
+        <result property="minTypeId" column="cou_type_id"/>
+        <result property="label" column="type_name"/>
+    </resultMap>
+    <resultMap id="IssueVO" type="com.wisdom.interlocution.bean.vo.IssueVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="image" column="image"/>
+        <result property="userName" column="stu_name"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="is_click"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+        <result property="title" column="title"/>
+    </resultMap>
+    <resultMap id="Issue" type="com.wisdom.interlocution.bean.vo.IssueVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="image" column="image"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+        <result property="title" column="title"/>
+        <result property="userName" column="stu_name"/>
+    </resultMap>
+
+    <resultMap id="replyVO" type="com.wisdom.interlocution.bean.vo.ReplyVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="image" column="image"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="isClick"/>
+        <result property="role" column="role"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+        <result property="userName" column="stu_name"/>
+    </resultMap>
+
+
+    <select id="add">
+        insert topic_question(que_id, user_id, is_select, img, content, title, max_type_id, min_type_id, deleted) values (#{queId}, #{userId}, #{isSelect}, #{img}, #{content}, #{title}, #{maxTypeId}, #{minTypeId}, #{deleted})
+    </select>
+
+    <select id="getAllType" resultMap="maxTypeVO">
+        select * from type where parent_type_id is null
+    </select>
+
+    <select id="getMinTypeList" resultMap="minTypeVO" parameterType="long">
+        select * from type  where parent_type_id = #{cou_type_id}
+    </select>
+
+    <select id="reply">
+        insert topic_question(que_id, user_id, answered_tq_id, content, role) values (#{queId}, #{userId}, #{answeredTqId}, #{content}, #{role})
+    </select>
+
+    <select id="getAllWenDa" resultMap="IssueVO">
+        select tq.*,s.stu_name from topic_question tq left join student s on s.stu_id = tq.user_id where tq.answered_tq_id is null and tq.deleted = 0 order by tq.update_time desc
+    </select>
+
+    <select id="getAllTotal" resultType="long">
+        select count(*) from topic_question where deleted = 0 and answered_tq_id is null
+    </select>
+
+    <select id="getAllWenDaList" resultMap="IssueVO">
+        select * from topic_question where answered_tq_id is null and deleted = 0 order by update_time desc
+    </select>
+
+    <select id="getCount" resultType="long">
+        select count(*) from topic_question where answered_tq_id = #{queId} and deleted = 0
+    </select>
+
+    <select id="getTypeName" parameterType="long" resultType="string">
+        select type_name from type where cou_type_id = #{couTypeId}
+    </select>
+
+    <select id="issueVODetail" resultMap="Issue">
+        select s.stu_name, s.image, tp.* from topic_question tp LEFT JOIN  student s on s.stu_id = tp.user_id where tp.que_id = #{queId} and tp.deleted = 0 order by is_select desc, update_time desc
+    </select>
+    <select id="getReplyByInfoIdList" resultMap="replyVO">
+        select s.stu_name, s.image, tp.* from topic_question tp LEFT JOIN  student s on s.stu_id = tp.user_id where tp.answered_tq_id = #{queId} and tp.deleted = 0  order by is_select desc, update_time desc
+    </select>
+
+    <select id="getReplyByInfoId" resultMap="replyVO">
+        select * from topic_question where answered_tq_id = #{queId} and deleted = 0 order by is_select desc, update_time desc
+    </select>
+    <select id="teaGetReplyByInfoId" resultMap="replyVO">
+        select * from topic_question where answered_tq_id = #{queId} and deleted = 0 order by is_select desc, update_time desc
+    </select>
+
+    <select id="isClick" resultType="int">
+        select count(*) from user_click where click_id = #{queId} and user_id = #{userId}
+    </select>
+
+    <select id="addClick">
+        insert user_click(click_id, user_id) values(#{queId}, #{userId})
+    </select>
+
+    <select id="updateIssueClicks">
+        update topic_question set clicks = #{clicks} where que_id = #{queId} and deleted = 0
+    </select>
+
+    <select id="deletedClick">
+        delete from user_click where user_id = #{userId} and click_id = #{queId}
+    </select>
+
+    <select id="isAdopt" resultType="int">
+        select count(*) from user_click where click_id = #{replyId} and user_id = #{userId}
+    </select>
+
+    <select id="addAdopt">
+        insert user_click(click_id, user_id) values(#{replyId}, #{userId})
+    </select>
+
+    <select id="deletedAdopt">
+        delete from user_click where user_id = #{userId} and click_id = #{replyId}
+    </select>
+
+    <select id="deletedAllAdopt">
+        delete from user_click where click_id in (select que_id from topic_question where answered_tq_id = #{queId} and deleted = 0)
+    </select>
+
+    <select id="updateComAdopt">
+        update topic_question set is_select = #{isSelect} where que_id = #{replyId} and deleted = 0
+    </select>
+
+    <select id="updateAllComAdopt">
+        update topic_question set is_select = 0 where answered_tq_id = #{queId} and deleted = 0
+    </select>
+
+    <select id="search" resultMap="IssueVO">
+        select * from topic_question  where que_id in (select tq.que_id from topic_question tq where tq.max_type_id in (select cou_type_id from type t where CONCAT( IFNULL(t.type_name,'')) LIKE CONCAT('%',#{val},'%'))
+            or tq.min_type_id in (select cou_type_id from type t1 where CONCAT( IFNULL(t1.type_name,'')) LIKE CONCAT('%',#{val},'%'))
+            or CONCAT( IFNULL(tq.title,''),IFNULL(tq.content,'')) LIKE CONCAT('%',#{val},'%'))
+                                           and deleted = 0
+                                            and answered_tq_id is null order by create_time desc
+
+    </select>
+
+    <select id="remoteUpdateWenDa">
+        update topic_question set deleted = #{deleted} where que_id = #{queId}
+    </select>
+
+    <select id="stuNoticeWenDa" resultMap="IssueVO">
+        select tq.* from topic_question tq left join notice n on n.notice_id = tq.que_id where n.user_id = #{stuId} and n.deleted = 0 order by tq.create_time desc
+    </select>
+
+    <delete id="deletedWenDa" parameterType="long" >
+        update topic_question set deleted = 1 WHERE que_id IN
+        <foreach collection="qId" item="qId" open="(" close=")" separator=",">
+            #{qId}
+        </foreach>
+    </delete>
+
+    <delete id="deletedReply" parameterType="long" >
+        update topic_question set deleted = 1 WHERE answered_tq_id IN
+        <foreach collection="qId" item="qId" open="(" close=")" separator=",">
+            #{qId}
+        </foreach>
+    </delete>
+
+    <select id="addScore">
+        insert stu_score(stu_id, score_type, score) values (#{stuId}, #{scoreType}, #{score})
+    </select>
+
+    <select id="getUserIdByReplyId" resultType="long">
+        select user_id from topic_question where que_id = #{replyId} and deleted = 0
+    </select>
+
+
+<!--    ************************************************************************************************** -->
+    <resultMap id="InterlocutionVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="image" column="image"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="is_click"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <resultMap id="issuesVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="is_click"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+        <collection property="replyVOList" column="que_id" javaType="ArrayList" ofType="com.wisdom.interlocution.bean.vo.ReplyVO" select="getIssueByansweredTqId"/>
+    </resultMap>
+    <select id="getIssue" resultMap="InterlocutionVO" parameterType="long">
+        select s.image, tq.* from topic_question tq left join student s on s.stu_id = tq.user_id where tq.deleted = 0 and tq.que_id in (select DISTINCT t.answered_tq_id from topic_question t where t.user_id = #{userId} and t.answered_tq_id is not null) order by create_time desc
+    </select>
+    <select id="getMyIssues" resultMap="InterlocutionVO" parameterType="long">
+        select * from topic_question where user_id = #{userId} and deleted = 0 and answered_tq_id is null order by create_time desc
+    </select>
+    <select id="getReply" resultMap="replyVO">
+        select s.image, tq.* from topic_question tq left join student s on s.stu_id = tq.user_id where tq.answered_tq_id = #{queId} and tq.user_id = #{userId} and tq.deleted = 0 order by create_time desc
+    </select>
+    <select id="getReplyMyIssue" resultMap="issuesVO" parameterType="long">
+        select * from topic_question where que_id = #{queId} and deleted = 0 order by create_time desc
+    </select>
+    <select id="getIssueByansweredTqId" resultMap="replyVO" parameterType="long">
+        select * from topic_question where answered_tq_id = #{queId} and deleted = 0 order by create_time desc
+    </select>
+    <resultMap id="MyReplyVO" type="com.wisdom.interlocution.bean.vo.InterlocutionVO">
+        <id property="id" column="id" />
+        <result property="queId" column="que_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="answeredTqId" column="answered_tq_id"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="img" column="img"/>
+        <result property="image" column="image"/>
+        <result property="clicks" column="clicks"/>
+        <result property="favorites" column="favorites"/>
+        <result property="isClick" column="is_click"/>
+        <result property="isFavorite" column="is_favorite"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <select id="getMyReplyByqueId" resultMap="MyReplyVO" parameterType="long">
+        select s.image, tq.* from topic_question tq left join student s on s.stu_id = tq.user_id where tq.que_id = #{queId} and tq.deleted = 0 order by create_time desc
+    </select>
+
+    <select id="getClicks" resultType="long">
+        select clicks from topic_question where que_id = #{queId}
+    </select>
+
+    <select id="getClaAllStuByTeaId" resultType="long">
+        select sc.stu_id from stu_class sc LEFT JOIN class c ON c.class_id = sc.class_id WHERE c.tea_id = #{teaId}
+    </select>
+</mapper>

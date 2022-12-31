@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.CartMapper">
+    <select id="getCouIdByStuId" parameterType="long" resultType="long">
+        select cou_id from stu_cou_cart where stu_id = #{stuId}
+    </select>
+    <select id="deletedCartByCouId">
+        delete from stu_cou_cart where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="deletedCart">
+        delete from stu_cou_cart where stu_id = #{stuId} and cou_id in
+        <foreach collection="list" item="couId" index="index"
+                 open="(" close=")" separator=",">
+            #{couId}
+        </foreach>
+    </select>
+    <select id="buy">
+        INSERT stu_cou(stu_id, cou_id) VALUES (#{stuId}, #{couId})
+    </select>
+    <select id="add">
+        INSERT stu_cou_cart(stu_id, cou_id) VALUES (#{stuId}, #{couId})
+    </select>
+    <select id="buy1">
+        INSERT course_appraise(stu_id, cou_id) VALUES (#{stuId}, #{couId})
+    </select>
+    <select id="buy2">
+        INSERT course_interation(stu_id, cou_id) VALUES (#{stuId}, #{couId})
+    </select>
+    <select id="buy3">
+        INSERT stu_cou_progress(stu_id, cou_id, cha_id) VALUES (#{stuId}, #{couId}, #(chaId))
+    </select>
+    <select id="isAddCart" resultType="int">
+        select count(*) from stu_cou_cart where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="isBuy" resultType="int">
+        select count(*) from stu_cou where cou_id = #{couId} and stu_id = #{stuId}
+    </select>
+    <select id="addDeScore">
+        insert stu_score(stu_id, score_type, score, deduct_type) values (#{stuId}, #{scoreType}, #{score}, #{deductType})
+    </select>
+</mapper>

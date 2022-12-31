@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.stclass.mapper.ClassMapper">
+    <insert id="classAddStu" parameterType="ClassAddDelStuDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO stu_class (`stu_id`, `class_id`)
+        VALUES (#{stuId}, #{classId});
+    </insert>
+    <insert id="classAddCou" parameterType="ClassAddDelCouDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cou_class (`cou_id`, `class_id`)
+        VALUES (#{couId}, #{classId});
+    </insert>
+
+    <update id="classDeletedStu" parameterType="ClassAddDelStuDTO">
+        UPDATE stu_class
+        SET deleted = 1
+        WHERE class_id = #{classId} AND stu_id = #{stuId} AND deleted = 0
+    </update>
+    <update id="classDeletedCou" parameterType="ClassAddDelCouDTO">
+        UPDATE cou_class
+        SET deleted = 1
+        WHERE class_id = #{classId} AND cou_id = #{couId} AND deleted = 0
+    </update>
+
+    <update id="classUpCou" parameterType="ClassAddDelCouDTO">
+        UPDATE cou_class
+        SET deleted = 0
+        WHERE class_id = #{classId} AND cou_id = #{couId} AND deleted = 1
+    </update>
+    <update id="classUpStu" parameterType="ClassAddDelStuDTO">
+        UPDATE stu_class
+        SET deleted = 0
+        WHERE class_id = #{classId} AND stu_id = #{stuId} AND deleted = 1
+    </update>
+
+    <select id="queryStuIdByEmail" parameterType="string" resultType="long">
+        SELECT stu_id
+        FROM student
+        WHERE email = #{email}
+    </select>
+    <select id="getStuClockDate" resultType="map">
+        SELECT DATE_FORMAT(clock_date.create_time,'%Y-%m-%d %h:%m:%s') as create_time
+        FROM clock_date
+        WHERE stu_id = #{stuId}
+        ORDER BY create_time
+    </select>
+    <select id="getStuDailyTime" resultType="DailyTimeVO">
+        SELECT daily_time,create_time
+        FROM history_learning_duration
+        WHERE stu_id = #{stuId}
+    </select>
+    <select id="selectClaCou" parameterType="ClassAddDelCouDTO" resultType="int">
+        SELECT deleted
+        FROM cou_class
+        WHERE class_id = #{classId} AND cou_id = #{couId}
+    </select>
+    <select id="selectClaStu" parameterType="ClassAddDelStuDTO" resultType="int">
+        SELECT deleted
+        FROM stu_class
+        WHERE class_id = #{classId} AND stu_id = #{stuId}
+    </select>
+</mapper>

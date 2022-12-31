@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.user.mapper.TeaMapper">
+    <resultMap id="userLoginMap" type="LoginVO">
+        <id property="id" column="id"/>
+        <result column="tea_id" property="userId"/>
+    </resultMap>
+    <resultMap id="teacherDetailedVO" type="com.wisdom.user.bean.vo.TeacherDetailedVO">
+        <result property="teaId" column="tea_id"/>
+        <result property="teaName" column="tea_name"/>
+        <result property="gender" column="gender"/>
+        <result property="image" column="image"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <select id="login" parameterType="UserLoginDTO" resultMap="userLoginMap">
+        SELECT id, tea_id FROM teacher WHERE email = #{account} AND password = #{password} AND deleted = 0
+    </select>
+    <select id="getTeaByTeaId" resultMap="teacherDetailedVO">
+        select * from teacher where tea_id = #{teaId}
+    </select>
+</mapper>
