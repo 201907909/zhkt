@@ -1,0 +1,267 @@
+{
+	"easycom": {
+	    "^u-(.*)": "@/uni_modules/uview-ui/components/u-$1/u-$1.vue"
+	  },
+	  
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		// 主要页面
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "选课",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/study/study",
+			"style": {
+				"navigationBarTitleText": "学习",
+				"navigationBarBackgroundColor": "#aad09d",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"backgroundColor":"#202020"
+			}
+		},
+		{
+			"path": "pages/find/find",
+			"style": {
+				"navigationBarTitleText": "发现",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50,
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom", // 使用自定义导航栏，系统会关闭默认的原生导航栏
+				// "navigationBarBackgroundColor": "#daf3cb"
+				"navigationBarBackgroundColor": "#9b9ffb"
+			}
+		},
+		// 主要页面结束
+		// "我的"部分
+		{
+		    "path" : "pages/cart/cart",
+		    "style": {
+		        "navigationBarTitleText": "购物车",
+		        "enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+		    }
+		},
+		{
+		    "path" : "pages/buy/buy",
+		    "style": {
+		        "navigationBarTitleText": "购买成功",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+			"path" : "pages/signIn/signIn",
+			"style": {
+				"navigationBarTitleText":"签到",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+		    "path" : "pages/collection/collection",
+		    "style": {
+		        "navigationBarTitleText": "我的收藏",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/news/news",
+		    "style": {
+		        "navigationBarTitleText": "我的消息",
+		        "enablePullDownRefresh": true
+		    }
+		},
+		{
+		    "path" : "pages/login/login", 
+		    "style": {
+		        "navigationBarTitleText": "登录",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/user/userInfo/userInfo", 
+		    "style": {
+		        "navigationBarTitleText": "用户信息",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+			"path": "pages/user/u-avatar-cropper/u-avatar-cropper",
+			"style": {
+				"navigationBarTitleText": "头像裁剪",
+				"navigationBarBackgroundColor": "#000000"
+			}
+		},
+		// "我的"部分结束
+		
+		//	"选课"部分
+		{
+		  "path": "pages/index/compoents/courseDetail",
+		  "style": {
+			"navigationBarTitleText": "课程详情",
+			"enablePullDownRefresh": true,
+			"onReachBottomDistance": 50
+		  }
+		},
+		{
+		  "path": "pages/index/compoents/moreCourse",
+		  "style": {
+			"navigationBarTitleText": "课程列表",
+			"enablePullDownRefresh": false,
+			"onReachBottomDistance": 50
+		  }
+		},
+		{
+			"path": "pages/index/compoents/searchPage",
+			"style": {
+		        "navigationBarTitleText": "搜索课程",
+		        "enablePullDownRefresh": false,
+				"onReachBottomDistance": 50,
+				"navigationStyle": "custom"
+			}
+		},
+		//"选课"部分结束
+		
+		// "发现"部分
+		{
+			"path": "pages/find/compoents/infoDetail",
+			"style": {
+				"navigationBarTitleText": "资讯",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+			}
+		},
+		{
+			"path": "pages/find/compoents/questionDetail",
+			"style": {
+				"navigationBarTitleText": "问题详情",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+			}
+		},
+		{
+		    "path": "pages/find/compoents/addQuestion",
+		    "style": {
+				"navigationBarTitleText": "发布问题",
+				"enablePullDownRefresh": false
+				// "navigationStyle": "custom", // 隐藏系统导航栏
+				// "navigationBarTextStyle": "white" // 状态栏字体为白色，只能为 white-白色，black-黑色 二选一
+			}		
+	    },
+		 {
+			"path": "pages/find/compoents/toSearchInfo",
+			"style": {
+				"navigationBarTitleText": "搜索资讯",
+				"enablePullDownRefresh": false,
+				"onReachBottomDistance": 50
+			}
+		}, 
+		{
+			"path": "pages/find/compoents/toSearchQuestion",
+			"style": {
+				"navigationBarTitleText": "搜索问题",
+				"enablePullDownRefresh": false,
+				"onReachBottomDistance": 50
+			}
+		},
+		// "发现"部分结束
+		
+		// 学习部分开始
+		{
+			"path": "pages/study/components/essayList",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/study/components/bookList",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}
+		// 学习部分结束
+		
+	],
+	// 签到页面与学习页面
+	"subPackages": [{
+	    "root": "subpkg",
+	    "pages": [
+			{
+				"path" : "study_play/study_play",
+				"style" :                                                                                    
+				{
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+			},
+			{
+				"path" : "exchange_course/exchange_course",
+				"style" :                                                                                    
+				{
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+			}
+		]
+	  }],
+	// 签到页面与学习页面
+	
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "uni-app",
+		// "navigationBarBackgroundColor": "#aad09d",
+		"navigationBarBackgroundColor": "#7f94ff",
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"pullToRefresh": {
+				"style":"circle",
+				"color":"#7f94ff"
+			}
+		}
+	},
+	
+	// 应用下方导航栏tabBar
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#333333",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "black",
+		"list": [
+	    {
+			"pagePath": "pages/index/index",
+			"iconPath": "static/tabbar/index.png",
+			"selectedIconPath": "./static/tabbar/index-a.png",
+			"text": "选课"
+	    },
+		{
+			"pagePath": "pages/study/study",
+			"iconPath": "static/tabbar/study.png",
+			"selectedIconPath": "./static/tabbar/study-a.png",
+			"text": "学习"
+		},
+	    {
+			"pagePath": "pages/find/find",
+			"iconPath": "static/tabbar/activity.png",
+			"selectedIconPath": "static/tabbar/activity-a.png",
+			"text": "发现"
+	    },
+	    {
+			"pagePath": "pages/user/user",
+			"iconPath": "static/tabbar/user.png",
+			"selectedIconPath": "static/tabbar/user-a.png",
+			"text": "我的"
+	    }
+	  ]
+	}
+	// tabBar结束
+}
