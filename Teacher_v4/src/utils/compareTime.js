@@ -1,0 +1,15 @@
+//输入的时间是'2022/3/11 12:00'这种格式
+export const compareTime = (gettime) => {
+	var today = new Date()  //获取当前时间
+	gettime = gettime.replace(/-/g, '/');
+   //转化成时间戳作比较
+	var endTime = new Date(gettime) //自己的时间
+	if (today.getTime() > endTime.getTime()) {
+	//当前时间大于我的时间 （过去）
+		return false
+	} else {
+	//当前时间小于我的时间 （未来）
+		return true
+	}
+}
+
